@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Share Clipz</title>
+  <style>
+    body {
+      background-color: #212121;
+      color: white;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #1072C5;
+      text-align: center;
+    }
+    small {
+      display: block;
+      text-align: center;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+    .red-line {
+      border-top: 5px solid red;
+      margin-bottom: 20px;
+    }
+    .video-section {
+      display: flex;
+      gap: 20px;
+    }
+    video {
+      width: 100%;
+      height: auto;
+    }
+    .video-list {
+      width: 250px;
+    }
+    .video-list li {
+      background: #333;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .video-list li:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Share Clipz</h1>
+  <small>powered by Major Monogram</small>
+  <div class="red-line"></div>
+
+  <div class="video-section">
+    <div style="flex: 2;">
+      <video id="mainVideo" controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <ul class="video-list" id="videoList"></ul>
+  </div>
+
+  <script>
+    const folderId = "162QLG-ve8klBKGgbWf2pQOs4pfOZKa7T";
+    const apiKey = "AIzaSyB36IbuoGOAAji67VcEn993wJzoUN-7Gsk"; // Replace with your API key
+
+    async function fetchVideos() {
+      const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const videoList = document.getElementById('videoList');
+      const mainVideo = document.getElementById('mainVideo');
+      const videoSource = document.getElementById('videoSource');
+
+      if (!data.files.length) {
+        videoList.innerHTML = "<li>No videos found</li>";
+        return;
+      }
+
+      // Load first video
+      const first = data.files[0];
+      videoSource.src = `https://drive.google.com/uc?export=download&id=${first.id}`;
+      mainVideo.load();
+
+      // Populate list
+      data.files.forEach(file => {
+        const li = document.createElement('li');
+        li.textContent = file.name;
+        li.addEventListener('click', () => {
+          videoSource.src = `https://drive.google.com/uc?export=download&id=${file.id}`;
+          mainVideo.load();
+        });
+        videoList.appendChild(li);
+      });
+    }
+
+    fetchVideos();
+  </script>
+
+</body>
+</html>
