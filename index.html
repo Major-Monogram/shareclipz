@@ -29,9 +29,11 @@
       display: flex;
       gap: 20px;
     }
-    video {
+    iframe {
       width: 100%;
-      height: auto;
+      height: 400px;
+      border: none;
+      border-radius: 6px;
     }
     .video-list {
       width: 250px;
@@ -40,8 +42,9 @@
       background: #333;
       padding: 10px;
       margin-bottom: 10px;
-      cursor: pointer;
       border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
     }
     .video-list li:hover {
       background: #444;
@@ -56,51 +59,26 @@
 
   <div class="video-section">
     <div style="flex: 2;">
-      <video id="mainVideo" controls>
-        <source id="videoSource" src="" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+      <iframe id="mainVideo" src="https://drive.google.com/file/d/1XkrTv3orKhagBiMsnzJz2e6XNJ38x5z1/preview" allow="autoplay"></iframe>
     </div>
-    <ul class="video-list" id="videoList"></ul>
+    <ul class="video-list">
+      <li onclick="switchVideo(1)">Video 1</li>
+      <li onclick="switchVideo(2)">Video 2</li>
+      <li onclick="switchVideo(3)">Video 3</li>
+    </ul>
   </div>
 
   <script>
-    const folderId = "162QLG-ve8klBKGgbWf2pQOs4pfOZKa7T";
-    const apiKey = "AIzaSyB36IbuoGOAAji67VcEn993wJzoUN-7Gsk"; // Replace with your API key
+    const videoMap = {
+      1: "https://drive.google.com/file/d/1XkrTv3orKhagBiMsnzJz2e6XNJ38x5z1/preview",
+      2: "https://drive.google.com/file/d/1AwCRWTBge3yuHjhHV8KHA4PdB2eiuXOw/preview",
+      3: "https://drive.google.com/file/d/1fO835rbmDPlJ04Hwi3yTZX5dU2qhj7TG/preview"
+    };
 
-    async function fetchVideos() {
-      const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const videoList = document.getElementById('videoList');
-      const mainVideo = document.getElementById('mainVideo');
-      const videoSource = document.getElementById('videoSource');
-
-      if (!data.files.length) {
-        videoList.innerHTML = "<li>No videos found</li>";
-        return;
-      }
-
-      // Load first video
-      const first = data.files[0];
-      videoSource.src = `https://drive.google.com/uc?export=download&id=${first.id}`;
-      mainVideo.load();
-
-      // Populate list
-      data.files.forEach(file => {
-        const li = document.createElement('li');
-        li.textContent = file.name;
-        li.addEventListener('click', () => {
-          videoSource.src = `https://drive.google.com/uc?export=download&id=${file.id}`;
-          mainVideo.load();
-        });
-        videoList.appendChild(li);
-      });
+    function switchVideo(id) {
+      const iframe = document.getElementById('mainVideo');
+      iframe.src = videoMap[id];
     }
-
-    fetchVideos();
   </script>
 
 </body>
